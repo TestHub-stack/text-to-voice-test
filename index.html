@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <title>Hindi Text to Speech</title>
+  <title>Hindi Text to Speech (Indian Accent)</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -24,43 +24,46 @@
   </style>
 </head>
 <body>
-  <h2>हिंदी टेक्स्ट को आवाज़ में बदलें</h2>
+  <h2>हिंदी टेक्स्ट को भारतीय उच्चारण में सुनें</h2>
   <textarea id="text" placeholder="यहाँ हिंदी में टेक्स्ट लिखें..."></textarea><br>
-  <button id="speakBtn">बोलें</button>
+  <button onclick="speakHindi()">बोलें</button>
 
   <script>
     let hindiVoice = null;
 
     function loadVoices() {
       const voices = window.speechSynthesis.getVoices();
-      hindiVoice = voices.find(voice => voice.lang === 'hi-IN');
 
-      // Fallback: If hindiVoice is not found, log a warning
+      // Try to find a Hindi voice
+      hindiVoice = voices.find(voice =>
+        voice.lang === 'hi-IN' || 
+        (voice.lang.startsWith('hi') && voice.name.toLowerCase().includes('google'))
+      );
+
+      // If not found, fallback to Indian English
       if (!hindiVoice) {
-        console.warn("Hindi voice not found. Trying default voice.");
+        hindiVoice = voices.find(voice => voice.lang === 'en-IN');
+        console.warn("Using fallback voice (en-IN). Hindi voice not found.");
       }
     }
 
-    // Some browsers need this event to properly load all voices
     window.speechSynthesis.onvoiceschanged = loadVoices;
 
-    document.getElementById("speakBtn").addEventListener("click", function () {
-      const text = document.getElementById("text").value;
-      if (!text) return alert("कृपया कुछ टेक्स्ट डालें!");
+    function speakHindi() {
+      const text = document.getElementById("text").value.trim();
+      if (!text) return alert("कृपया कुछ टेक्स्ट लिखें।");
 
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'hi-IN';
+      utterance.lang = hindiVoice?.lang || 'hi-IN';
 
       if (hindiVoice) {
         utterance.voice = hindiVoice;
       }
 
       window.speechSynthesis.speak(utterance);
-    });
+    }
 
-    // Try loading voices immediately (in case they're ready)
-    loadVoices();
+    loadVoices(); // Try loading voices immediately
   </script>
 </body>
 </html>
-
