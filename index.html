@@ -2,68 +2,14 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <title>Hindi Text to Speech (Indian Accent)</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background-color: #f0f4f8;
-    }
-    textarea {
-      width: 100%;
-      height: 100px;
-      font-size: 16px;
-      padding: 10px;
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-  </style>
+  <title>Hindi TTS</title>
 </head>
 <body>
-  <h2>हिंदी टेक्स्ट को भारतीय उच्चारण में सुनें</h2>
-  <textarea id="text" placeholder="यहाँ हिंदी में टेक्स्ट लिखें..."></textarea><br>
-  <button onclick="speakHindi()">बोलें</button>
+  <h2>Indian Accent Hindi Text to Speech</h2>
+  <textarea id="text" placeholder="हिंदी टेक्स्ट यहाँ लिखें..."></textarea><br>
+  <button onclick="speakText()">🔊 बोलें</button>
 
-  <script>
-    let hindiVoice = null;
-
-    function loadVoices() {
-      const voices = window.speechSynthesis.getVoices();
-
-      // Try to find a Hindi voice
-      hindiVoice = voices.find(voice =>
-        voice.lang === 'hi-IN' || 
-        (voice.lang.startsWith('hi') && voice.name.toLowerCase().includes('google'))
-      );
-
-      // If not found, fallback to Indian English
-      if (!hindiVoice) {
-        hindiVoice = voices.find(voice => voice.lang === 'en-IN');
-        console.warn("Using fallback voice (en-IN). Hindi voice not found.");
-      }
-    }
-
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-
-    function speakHindi() {
-      const text = document.getElementById("text").value.trim();
-      if (!text) return alert("कृपया कुछ टेक्स्ट लिखें।");
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = hindiVoice?.lang || 'hi-IN';
-
-      if (hindiVoice) {
-        utterance.voice = hindiVoice;
-      }
-
-      window.speechSynthesis.speak(utterance);
-    }
-
-    loadVoices(); // Try loading voices immediately
-  </script>
+  <!-- Link to external JavaScript -->
+  <script src="speech.js"></script>
 </body>
 </html>
