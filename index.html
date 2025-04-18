@@ -26,27 +26,41 @@
 <body>
   <h2>हिंदी टेक्स्ट को आवाज़ में बदलें</h2>
   <textarea id="text" placeholder="यहाँ हिंदी में टेक्स्ट लिखें..."></textarea><br>
-  <button onclick="speakHindi()">बोलें</button>
+  <button id="speakBtn">बोलें</button>
 
   <script>
-    function speakHindi() {
+    let hindiVoice = null;
+
+    function loadVoices() {
+      const voices = window.speechSynthesis.getVoices();
+      hindiVoice = voices.find(voice => voice.lang === 'hi-IN');
+
+      // Fallback: If hindiVoice is not found, log a warning
+      if (!hindiVoice) {
+        console.warn("Hindi voice not found. Trying default voice.");
+      }
+    }
+
+    // Some browsers need this event to properly load all voices
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
+    document.getElementById("speakBtn").addEventListener("click", function () {
       const text = document.getElementById("text").value;
+      if (!text) return alert("कृपया कुछ टेक्स्ट डालें!");
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'hi-IN';
 
-      const voices = window.speechSynthesis.getVoices();
-      const hindiVoice = voices.find(voice => voice.lang === 'hi-IN');
       if (hindiVoice) {
         utterance.voice = hindiVoice;
       }
 
       window.speechSynthesis.speak(utterance);
-    }
+    });
 
-    window.speechSynthesis.onvoiceschanged = function() {
-      window.speechSynthesis.getVoices();
-    };
+    // Try loading voices immediately (in case they're ready)
+    loadVoices();
   </script>
 </body>
 </html>
+
